@@ -1,0 +1,32 @@
+/* src/pages/FeaturesPage.css */
+
+.features-page {
+    padding-top: 4rem;
+  }
+  
+  .features-hero {
+    background-color: #312e81;
+    color: white;
+    padding: 4rem 0;
+  }
+  
+  .features-hero-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    text-align: center;
+  }
+  
+  .features-hero-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .features-hero-description {
+    font-size: 1.25rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }

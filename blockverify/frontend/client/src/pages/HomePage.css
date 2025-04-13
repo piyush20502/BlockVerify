@@ -1,0 +1,81 @@
+/* src/pages/HomePage.css */
+
+/* Removed the empty ruleset for .home-page */
+  
+  .cta-section {
+    padding: 5rem 1rem;
+    background-color: #312e81;
+    color: white;
+  }
+  
+  .cta-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .cta-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .cta-title {
+      font-size: 2.25rem;
+    }
+  }
+  
+  .cta-description {
+    font-size: 1.125rem;
+    color: #a5b4fc;
+    margin-bottom: 2rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .cta-buttons {
+      flex-direction: row;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+  }
+  
+  .cta-button-primary,
+  .cta-button-secondary {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .cta-button-primary {
+    background-color: white;
+    color: #312e81;
+  }
+  
+  .cta-button-primary:hover {
+    background-color: #e0e7ff;
+  }
+  
+  .cta-button-secondary {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+  }
+  
+  .cta-button-secondary:hover {
+    background-color: #3730a3;
+  }

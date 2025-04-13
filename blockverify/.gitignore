@@ -1,0 +1,48 @@
+# General
+.DS_Store
+*.log
+*.pid
+*.seed
+*.pid.lock
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Hardhat
+artifacts/
+cache/
+coverage/
+coverage.json
+typechain/
+
+# Frontend
+dist/
+.temp/
+.cache/
+*.tmp
+*.bak
+
+# Testing
+/test-results/
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,10 @@
+/* src/index.css */
+@import 'base.css';
+@import 'components.css';
+@import 'utilities.css';
+
+/* Keep your test styles */
+body {
+background-color: #ef4444; /* Tailwind's bg-red-500 */
+color: #ffffff; /* Tailwind's text-white */
+}

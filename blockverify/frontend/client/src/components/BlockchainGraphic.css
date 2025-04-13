@@ -1,0 +1,162 @@
+/* src/components/BlockchainGraphic.css */
+
+.blockchain-graphic-container {
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+    height: 20rem;
+  }
+  
+  @media (min-width: 768px) {
+    .blockchain-graphic-container {
+      height: 24rem;
+    }
+  }
+  
+  .blockchain-block {
+    position: absolute;
+    width: 6rem;
+    height: 8rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 2px solid #4f46e5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 1s ease;
+  }
+  
+  .blockchain-block:hover {
+    transform: translateY(-0.5rem);
+  }
+  
+  .block-icon {
+    font-size: 1.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .block-label {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  
+  .block-1 {
+    top: 2.5rem;
+    left: 2.5rem;
+    animation: float1 3s ease-in-out infinite;
+  }
+  
+  .block-2 {
+    top: 6rem;
+    left: 12rem;
+    animation: float2 3.5s ease-in-out infinite;
+  }
+  
+  .block-3 {
+    top: 1.25rem;
+    right: 2.5rem;
+    animation: float3 4s ease-in-out infinite;
+  }
+  
+  .connection {
+    position: absolute;
+    background-color: #4f46e5;
+    height: 0.125rem;
+  }
+  
+  .connection-1 {
+    top: 6rem;
+    left: 8rem;
+    width: 6rem;
+    transform: rotate(6deg);
+  }
+  
+  .connection-2 {
+    top: 5rem;
+    left: 16rem;
+    width: 9rem;
+    transform: rotate(-12deg);
+  }
+  
+  .data-packet {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: #3730a3;
+    border-radius: 50%;
+  }
+  
+  .packet-1 {
+    top: 6rem;
+    left: 10rem;
+    animation: packet1 2s linear infinite;
+  }
+  
+  .packet-2 {
+    top: 4.5rem;
+    left: 20rem;
+    animation: packet2 2.5s linear infinite;
+  }
+  
+  @keyframes float1 {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.5rem);
+    }
+  }
+  
+  @keyframes float2 {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.75rem);
+    }
+  }
+  
+  @keyframes float3 {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.5rem);
+    }
+  }
+  
+  @keyframes packet1 {
+    0% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(4rem);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes packet2 {
+    0% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-4rem);
+      opacity: 0;
+    }
+  }
