@@ -115,13 +115,40 @@ router.post('/verify', async (req, res) => {
     
     // Generate hash and verify on blockchain
     const hash = generateHash(documentData);
-    const isValid = await contract.verifyMarksheet(documentId, hash);
+    const result = await contract.verifyMarksheet(documentId, hash);
+    
+    // Convert BigNumber to number if needed
+    const verificationCode = typeof result === 'object' && result.toNumber ? 
+      result.toNumber() : Number(result);
+    
+    console.log('Verification result code:', verificationCode);
+    
+    let message, isValid;
+    
+    switch (verificationCode) {
+      case 0:
+        message = 'Document not found in registry';
+        isValid = false;
+        break;
+      case 1:
+        message = 'Document exists but content has been altered';
+        isValid = false;
+        break;
+      case 2:
+        message = 'Document is authentic';
+        isValid = true;
+        break;
+      default:
+        message = 'Unexpected verification result';
+        isValid = false;
+    }
     
     // Success response
     res.status(200).json({
       success: true,
+      verificationCode,
       isValid,
-      message: isValid ? 'Document is authentic' : 'Document verification failed',
+      message,
       documentId,
       timestamp: new Date().toISOString()
     });

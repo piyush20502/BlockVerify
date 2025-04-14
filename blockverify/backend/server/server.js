@@ -7,7 +7,7 @@ require('./models/User');
 require('./models/VerificationLog');
 
 // Connect to Database
-connectDB();
+// connectDB();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

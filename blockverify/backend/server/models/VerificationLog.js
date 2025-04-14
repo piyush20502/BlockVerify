@@ -1,8 +1,6 @@
-const mongoose = require('mongoose');
-
-const VerificationLogSchema = new mongoose.Schema({
+const VerificationLogSchema = {
   institution: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: 'ObjectId', // or 'string' depending on your implementation
     ref: 'User',
     required: true
   },
@@ -20,11 +18,11 @@ const VerificationLogSchema = new mongoose.Schema({
     required: true
   },
   verifiedBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: 'ObjectId', // or 'string' depending on your implementation
     ref: 'User'
   },
   metadata: {
-    type: mongoose.Schema.Types.Mixed
+    type: 'Mixed' // or 'object' for plain JavaScript
   },
   verifiedAt: {
     type: Date,
@@ -32,12 +30,23 @@ const VerificationLogSchema = new mongoose.Schema({
   },
   transactionHash: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
-}, {
-  timestamps: true
-});
+};
 
-// Add compound index for faster queries
-VerificationLogSchema.index({ documentId: 1, institution: 1 });
+// Index definitions (would be implemented differently in non-MongoDB systems)
+const VerificationLogIndexes = [
+  { fields: { documentId: 1, institution: 1 } }
+];
 
-module.exports = mongoose.model('VerificationLog', VerificationLogSchema);
+module.exports = {
+  VerificationLogSchema,
+  VerificationLogIndexes
+};

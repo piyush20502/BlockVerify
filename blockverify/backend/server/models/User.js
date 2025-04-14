@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = {
   name: {
     type: String,
     required: [true, 'Please provide name'],
@@ -39,48 +39,44 @@ const UserSchema = new mongoose.Schema({
     default: true,
     select: false
   }
-});
-
-// Encrypt password before saving
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
-});
-
-// Instance method to compare passwords
-UserSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate JWT token
-UserSchema.methods.generateAuthToken = function() {
-  return jwt.sign(
-    { id: this._id, role: this.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '30d' }
-  );
-};
+// User methods
+const UserMethods = {
+  // Encrypt password before saving
+  encryptPassword: async function(password) {
+    return await bcrypt.hash(password, 12);
+  },
 
-// Create password reset token
-UserSchema.methods.createPasswordResetToken = function() {
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+  // Compare passwords
+  comparePassword: async function(candidatePassword, hashedPassword) {
+    return await bcrypt.compare(candidatePassword, hashedPassword);
+  },
+
+  // Generate JWT token
+  generateAuthToken: function(userId, role) {
+    return jwt.sign(
+      { id: userId, role: role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '30d' }
+    );
+  },
+
+  // Create password reset token
+  createPasswordResetToken: function() {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
     
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-  
-  return resetToken;
+    const passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    
+    return { resetToken, hashedToken, passwordResetExpires };
+  }
 };
 
-// Query middleware to filter out inactive users
-UserSchema.pre(/^find/, function(next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
-
-module.exports = mongoose.model('User', UserSchema);
+module.exports = {
+  UserSchema,
+  UserMethods
+};

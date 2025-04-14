@@ -80,10 +80,13 @@ const Dashboard = () => {
   // Helper function to hash document data
   const hashDocumentData = (data) => {
     try {
+      console.log("Hashing input data:", data);
       // Convert string to bytes
       const dataBytes = ethers.toUtf8Bytes(data);
       // Hash the bytes using keccak256
-      return ethers.keccak256(dataBytes);
+      const hash = ethers.keccak256(dataBytes);
+      console.log("Generated hash:", hash);
+      return hash;
     } catch (err) {
       console.error("Hashing error:", err);
       throw new Error("Failed to hash document data");
@@ -106,8 +109,16 @@ const Dashboard = () => {
         throw new Error("Contract not initialized");
       }
       
+      console.log("Publishing document with ID:", documentId);
+      console.log("Document data to hash:", documentData);
+      
       // Hash the document data
       const documentHash = hashDocumentData(documentData);
+      
+      console.log("Document data published to blockchain:", {
+        documentId,
+        documentHash
+      });
       
       // Estimate gas with error handling
       let gasEstimate;
@@ -158,31 +169,46 @@ const Dashboard = () => {
       const activeContract = contract || await initContract();
       if (!activeContract) throw new Error("Contract not initialized");
       
+      console.log("Verifying document with ID:", documentId);
+      console.log("Document data to verify:", documentData);
+      
       const documentHash = hashDocumentData(documentData);
       
-      console.log("Verifying with document ID:", documentId);
-      console.log("Generated hash:", documentHash);
+      console.log("Verification attempt with:", {
+        documentId,
+        documentHash
+      });
       
       try {
-        const resultCode = await activeContract.verifyMarksheet(
+        const result = await activeContract.verifyMarksheet(
           documentId, 
           documentHash
         );
         
-        console.log("Verification result code:", resultCode);
+        console.log("Raw verification result:", result);
         
-        const resultValue = Number(resultCode);
+        // Handle different ethers.js versions and BigNumber response
+        let resultValue;
+        if (typeof result === 'object' && result.toNumber) {
+          // BigNumber object
+          resultValue = result.toNumber();
+        } else {
+          // Already a number or can be directly converted
+          resultValue = Number(result);
+        }
+        
+        console.log("Converted verification result:", resultValue);
         
         switch (resultValue) {
           case 0:
             setVerificationResult('not-found');
             setError("Document not found in registry");
             break;
-          case 1:
+          case 2:
             setVerificationResult('mismatch');
             setError("Document exists but hash doesn't match");
             break;
-          case 2:
+          case 1:
             setVerificationResult('match');
             setSuccess("Document verification successful!");
             break;
@@ -205,8 +231,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="dashboard-container">
