@@ -21,7 +21,8 @@ const Dashboard = () => {
   // Initialize contract with provider
   const initContract = async () => {
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      // const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.JsonRpcProvider("http://localhost:8545");
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         contractAddress,
@@ -145,68 +146,65 @@ const Dashboard = () => {
 
   const handleVerify = async () => {
     try {
-        if (!documentId.trim() || !documentData.trim()) {
-            throw new Error("Both Document ID and Data are required");
+      if (!documentId.trim() || !documentData.trim()) {
+        throw new Error("Both Document ID and Data are required");
+      }
+      
+      setLoading(true);
+      setError('');
+      setSuccess('');
+      setVerificationResult(null);
+      
+      const activeContract = contract || await initContract();
+      if (!activeContract) throw new Error("Contract not initialized");
+      
+      const documentHash = hashDocumentData(documentData);
+      
+      console.log("Verifying with document ID:", documentId);
+      console.log("Generated hash:", documentHash);
+      
+      try {
+        const resultCode = await activeContract.verifyMarksheet(
+          documentId, 
+          documentHash
+        );
+        
+        console.log("Verification result code:", resultCode);
+        
+        const resultValue = Number(resultCode);
+        
+        switch (resultValue) {
+          case 0:
+            setVerificationResult('not-found');
+            setError("Document not found in registry");
+            break;
+          case 1:
+            setVerificationResult('mismatch');
+            setError("Document exists but hash doesn't match");
+            break;
+          case 2:
+            setVerificationResult('match');
+            setSuccess("Document verification successful!");
+            break;
+          default:
+            throw new Error("Unexpected verification result: " + resultValue);
         }
-        
-        setLoading(true);
-        setError('');
-        setSuccess('');
-        setVerificationResult(null);
-        
-        const activeContract = contract || await initContract();
-        if (!activeContract) throw new Error("Contract not initialized");
-        
-        const documentHash = hashDocumentData(documentData);
-        
-        // Log values being sent to the contract for debugging
-        console.log("Verifying with document ID:", documentId);
-        console.log("Generated hash:", documentHash);
-        
-        try {
-            // Use call instead of staticCall if you're on an older ethers version
-            const resultCode = await activeContract.verifyMarksheet(
-                documentId, 
-                documentHash
-            );
-            
-            console.log("Verification result code:", resultCode);
-            
-            // Parse the result - note that ethers v6 might return BigInt
-            const resultValue = Number(resultCode);
-            
-            switch (resultValue) {
-                case 0:
-                    setVerificationResult('not-found');
-                    setError("Document not found in registry");
-                    break;
-                case 1:
-                    setVerificationResult('mismatch');
-                    setError("Document exists but hash doesn't match");
-                    break;
-                case 2:
-                    setVerificationResult('match');
-                    setSuccess("✓ Document verification successful!");
-                    break;
-                default:
-                    throw new Error("Unexpected verification result: " + resultValue);
-            }
-        } catch (err) {
-            console.error("Verification error:", err);
-            if (err.message.includes("revert")) {
-                setVerificationResult('error');
-                setError("Verification failed: Contract reverted");
-            } else {
-                throw err;
-            }
+      } catch (err) {
+        console.error("Verification error:", err);
+        if (err.message.includes("revert")) {
+          setVerificationResult('error');
+          setError("Verification failed: Contract reverted");
+        } else {
+          throw err;
         }
+      }
     } catch (err) {
-        setVerificationResult('error');
-        setError(`Verification error: ${err.message}`);
+      setVerificationResult('error');
+      setError(`Verification error: ${err.message}`);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
 
 
@@ -306,24 +304,22 @@ const Dashboard = () => {
                 )}
                 
                 {error && (
-                  <div className="alert-error">
-                    {error}
-                  </div>
-                )}
-                
-                {success && (
-                  <div className="alert-success">
-                    {success}
-                  </div>
-                )}
-                
-                {verificationResult !== null && (
-                  <div className={`alert-${verificationResult ? 'success' : 'error'}`}>
-                    {verificationResult 
-                      ? "✓ Document is valid and matches the stored hash!" 
-                      : "✗ Document verification failed. No matching hash found."}
-                  </div>
-                )}
+  <div className="alert-error">
+    {error}
+  </div>
+)}
+
+{success && (
+  <div className="alert-success">
+    {success}
+  </div>
+)}
+
+{verificationResult === 'match' && !success && (
+  <div className="alert-success">
+    ✓ Document is valid and matches the stored hash!
+  </div>
+)}
               </div>
             </div>
             

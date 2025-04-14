@@ -2,21 +2,48 @@ const express = require('express');
 const router = express.Router();
 const { ethers } = require('ethers');
 const auth = require('../middleware/auth');
-const MarksVerificationABI = require('../utils/MarksVerificationABI.json').abi;
 
-// Load contract configuration
+// First load environment variables
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const rpcUrl = process.env.ETHEREUM_RPC_URL;
+const privateKey = process.env.PRIVATE_KEY;
+
+// Check ethers version and initialize provider and wallet accordingly
+let provider, wallet;
+
+// For ethers v6
+if (ethers.JsonRpcProvider) {
+  provider = new ethers.JsonRpcProvider(rpcUrl);
+  wallet = new ethers.Wallet(privateKey, provider);
+} 
+// For ethers v5
+else if (ethers.providers && ethers.providers.JsonRpcProvider) {
+  provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  wallet = new ethers.Wallet(privateKey, provider);
+} else {
+  throw new Error('Unsupported ethers.js version');
+}
+
+// Then import and use contract ABI
+const MarksVerificationABI = require('../artifacts/contracts/MarksVerification.sol/MarksVerification.json').abi;
 const contract = new ethers.Contract(contractAddress, MarksVerificationABI, wallet);
 
+console.log("Contract initialized at:", contractAddress); // Debug log
+
 /**
- * Generates a SHA-256 hash from document data
- * @param {string} data - The document data to hash
- * @returns {string} The generated hash
+ * Generates a hash from document data
  */
 const generateHash = (data) => {
-  return ethers.utils.id(data);
+  // Handle different ethers versions
+  if (ethers.keccak256 && ethers.toUtf8Bytes) {
+    // ethers v6
+    return ethers.keccak256(ethers.toUtf8Bytes(data));
+  } else if (ethers.utils && ethers.utils.keccak256 && ethers.utils.toUtf8Bytes) {
+    // ethers v5
+    return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(data));
+  } else {
+    throw new Error('Unsupported ethers.js version');
+  }
 };
 
 /**
